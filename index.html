@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Bulanık Mantık ile İnsan Duygusu Tabanlı Müzik Öneri Sistemi - Fuzzy Logic Music Recommendation System">
+    <meta name="keywords" content="fuzzy logic, music recommendation, emotion, bulanık mantık, müzik öneri">
+    <meta name="author" content="Fuzzy Logic Project">
+    <title>🎵 Bulanık Mantık Müzik Öneri Sistemi</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+
+<body>
+    <!-- Background -->
+    <div class="app-background"></div>
+
+    <!-- Main App -->
+    <div class="app">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="container">
+                <div class="header-content animate-fade-in">
+                    <div class="logo">🎵</div>
+                    <h1 class="app-title">Bulanık Mantık Müzik Öneri Sistemi</h1>
+                    <p class="app-subtitle">
+                        Duygu durumunuza, enerji seviyenize ve ortamınıza göre size özel müzik önerileri
+                    </p>
+                    <div class="badge">
+                        <span>🧠</span>
+                        <span>Mamdani Bulanık Çıkarım Motoru</span>
+                        <span>•</span>
+                        <span>81 Kural</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <div class="app-grid">
+                    <!-- Input Section -->
+                    <section class="inputs-section">
+                        <h2 class="section-title animate-slide-left">
+                            <span>📥</span> Giriş Parametreleri
+                        </h2>
+
+                        <!-- Input Containers -->
+                        <div id="facialInputContainer" class="animate-fade-in stagger-1"></div>
+                        <div id="tempoInputContainer" class="animate-fade-in stagger-2"></div>
+                        <div id="energyInputContainer" class="animate-fade-in stagger-3"></div>
+                        <div id="brightnessInputContainer" class="animate-fade-in stagger-4"></div>
+
+                        <!-- Language Selector -->
+                        <div class="input-card language-selector animate-fade-in stagger-5">
+                            <div class="input-header">
+                                <div class="input-icon">🌍</div>
+                                <div class="input-info">
+                                    <h3>Müzik Dili</h3>
+                                    <p>Tercih ettiğiniz müzik dilini seçin</p>
+                                </div>
+                            </div>
+                            <div class="language-options">
+                                <button class="language-btn active" data-lang="tr" id="langTr">
+                                    <span class="lang-flag">🇹🇷</span>
+                                    <span class="lang-name">Türkçe</span>
+                                </button>
+                                <button class="language-btn" data-lang="en" id="langEn">
+                                    <span class="lang-flag">🌍</span>
+                                    <span class="lang-name">Yabancı</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Infer Button -->
+                        <div class="infer-section animate-fade-in stagger-6">
+                            <button id="inferBtn" class="infer-btn ripple-effect">
+                                <span class="icon">🔮</span>
+                                <span>Müzik Önerisi Al</span>
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Results Section -->
+                    <section class="results-section">
+                        <h2 class="section-title animate-slide-right">
+                            <span>📤</span> Öneri Sonuçları
+                        </h2>
+
+                        <div id="resultsContainer" class="results-container">
+                            <!-- Initial State -->
+                            <div id="initialState" class="result-card" style="text-align: center; padding: 60px 24px;">
+                                <div style="font-size: 64px; margin-bottom: 16px;">🎧</div>
+                                <h3 style="font-size: 20px; margin-bottom: 8px;">Bulanık Çıkarım Bekleniyor</h3>
+                                <p style="color: var(--text-muted);">
+                                    Soldaki parametreleri ayarlayın ve "Müzik Önerisi Al" butonuna tıklayın
+                                </p>
+                            </div>
+
+                            <!-- Genre Result (Hidden initially) -->
+                            <div id="genreResult" class="result-card genre-result" style="display: none;">
+                                <div class="result-header">
+                                    <span class="result-icon">🎭</span>
+                                    <div class="result-info">
+                                        <h3>Önerilen Müzik Türü</h3>
+                                        <p>Bulanık çıkarım sonucu</p>
+                                    </div>
+                                </div>
+                                <div id="genreBadge" class="genre-badge"></div>
+                                <p id="genreDescription" class="genre-description"></p>
+                            </div>
+
+                            <!-- Tempo Result (Hidden initially) -->
+                            <div id="tempoResult" class="result-card tempo-result" style="display: none;">
+                                <div class="result-header">
+                                    <span class="result-icon">⏱️</span>
+                                    <div class="result-info">
+                                        <h3>Önerilen Tempo</h3>
+                                        <p>Dakikadaki vuruş sayısı</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span id="tempoResultValue" class="tempo-result-value">--</span>
+                                    <span class="tempo-result-unit">BPM</span>
+                                </div>
+                                <p id="tempoCategory" class="tempo-category"></p>
+                            </div>
+
+                            <!-- Songs Section (Hidden initially) -->
+                            <div id="songsSection" class="songs-section" style="display: none;">
+                                <h3 class="section-title" style="font-size: 18px;">
+                                    <span>🎵</span> Önerilen Şarkılar
+                                </h3>
+                                <div id="songsGrid" class="songs-grid"></div>
+                            </div>
+
+                            <!-- Active Rules Display (Hidden initially) -->
+                            <div id="rulesDisplay" class="rules-display" style="display: none;">
+                                <h4 class="rules-title">🔥 Aktif Bulanık Kurallar</h4>
+                                <div id="rulesList"></div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Fuzzy Logic Dashboard Section -->
+            <div class="container" style="margin-top: 40px;">
+                <section class="dashboard-section" id="dashboardSection">
+                    <h2 class="section-title">
+                        <span>📊</span> Bulanık Mantık Analiz Paneli
+                    </h2>
+
+                    <div class="dashboard-grid">
+                        <!-- Membership Functions Panel -->
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <h3>📈 Üyelik Fonksiyonları</h3>
+                                <select id="membershipVarSelect" class="dashboard-select">
+                                    <option value="facial">Yüz İfadesi</option>
+                                    <option value="tempo">Tempo</option>
+                                    <option value="energy">Enerji</option>
+                                    <option value="brightness">Parlaklık</option>
+                                    <option value="genre">Tür (Çıkış)</option>
+                                    <option value="outputTempo">Tempo (Çıkış)</option>
+                                </select>
+                            </div>
+                            <div class="membership-chart-container">
+                                <canvas id="membershipChart" width="400" height="200"></canvas>
+                            </div>
+                            <div class="membership-legend" id="membershipLegend"></div>
+                        </div>
+
+                        <!-- Inference Statistics Panel - Enhanced -->
+                        <div class="dashboard-card dashboard-card-wide">
+                            <div class="dashboard-card-header">
+                                <h3>📋 Mamdani Bulanık Çıkarım Sistemi İstatistikleri</h3>
+                                <span class="dashboard-badge" id="systemStatus">Hazır</span>
+                            </div>
+
+                            <!-- System Configuration -->
+                            <div class="stats-section">
+                                <h4 class="stats-section-title">⚙️ Sistem Konfigürasyonu</h4>
+                                <div class="stats-grid-extended">
+                                    <div class="stat-item-extended">
+                                        <div class="stat-icon">📥</div>
+                                        <div class="stat-content">
+                                            <span class="stat-value-lg" id="statInputVars">4</span>
+                                            <span class="stat-label-lg">Giriş Değişkeni</span>
+                                            <span class="stat-detail">Yüz, Tempo, Enerji, Parlaklık</span>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item-extended">
+                                        <div class="stat-icon">📤</div>
+                                        <div class="stat-content">
+                                            <span class="stat-value-lg" id="statOutputVars">2</span>
+                                            <span class="stat-label-lg">Çıkış Değişkeni</span>
+                                            <span class="stat-detail">Müzik Türü, Tempo</span>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item-extended">
+                                        <div class="stat-icon">📜</div>
+                                        <div class="stat-content">
+                                            <span class="stat-value-lg" id="statTotalRules">81</span>
+                                            <span class="stat-label-lg">Toplam Kural Sayısı</span>
+                                            <span class="stat-detail">3×3×3×3 Kombinasyon</span>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item-extended">
+                                        <div class="stat-icon">🧮</div>
+                                        <div class="stat-content">
+                                            <span class="stat-value-lg">14</span>
+                                            <span class="stat-label-lg">Üyelik Fonksiyonu</span>
+                                            <span class="stat-detail">Üçgensel & Trapez</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fuzzification Analysis -->
+                            <div class="stats-section">
+                                <h4 class="stats-section-title">🔄 Bulanıklaştırma Analizi (Fuzzification)</h4>
+                                <div class="fuzzification-grid" id="fuzzificationGrid">
+                                    <div class="fuzz-var-card">
+                                        <div class="fuzz-var-header">
+                                            <span class="fuzz-var-icon">😊</span>
+                                            <span class="fuzz-var-name">Yüz İfadesi</span>
+                                            <span class="fuzz-var-value" id="fuzzFacialCrisp">50</span>
+                                        </div>
+                                        <div class="fuzz-terms">
+                                            <div class="fuzz-term">
+                                                <span class="fuzz-term-name">μ(Üzgün)</span>
+                                                <div class="fuzz-term-bar">
+                                                    <div class="fuzz-term-fill" id="fuzzFacialSad" style="width: 0%">
+                                                    </div>
+                                                </div>
+                                                <span class="fuzz-term-value" id="fuzzFacialSadVal">0.00</span>
+                                            </div>
+                                            <div class="fuzz-term">
+                                                <span class="fuzz-term-name">μ(Nötr)</span>
+                                                <div class="fuzz-term-bar">
+                                                    <div class="fuzz-term-fill" id="fuzzFacialNeutral"
+                                                        style="width: 100%"></div>
+                                                </div>
+                                                <span class="fuzz-term-value" id="fuzzFacialNeutralVal">1.00</span>
+                                            </div>
+                                            <div class="fuzz-term">
+                                                <span class="fuzz-term-name">μ(Mutlu)</span>
+                                                <div class="fuzz-term-bar">
+                                                    <div class="fuzz-term-fill" id="fuzzFacialHappy" style="width: 0%">
+                                                    </div>
+                                                </div>
+                                                <span class="fuzz-term-value" id="fuzzFacialHappyVal">0.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fuzz-var-card">
+                                        <div class="fuzz-var-header">
+                                            <span class="fuzz-var-icon">🎵</span>
+                                            <span class="fuzz-var-name">Son Dinlenen Tempo</span>
+                                            <span class="fuzz-var-value" id="fuzzTempoCrisp">110 BPM</span>
+                                        </div>
+                                        <div class="fuzz-terms">
+                                            <div class="fuzz-term">
+                                                <span class="fuzz-term-name">μ(Yavaş)</span>
+                                                <div class="fuzz-term-bar">
+                                                    <div class="fuzz-term-fill" id="fuzzTempoSlow" style="width: 0%">
+                                                    </div>
+                                                </div>
+                                                <span class="fuzz-term-value" id="fuzzTempoSlowVal">0.00</span>
+                                            </div>
+                                            <div class="fuzz-term">
+                                                <span class="fuzz-term-name">μ(Orta)</span>
+                                                <div class="fuzz-term-bar">
+                                                    <div class="fuzz-term-fill" id="fuzzTempoMedium"
+                                                        style="width: 100%"></div>
+                                                </div>
+                                                <span class="fuzz-term-value" id="fuzzTempoMediumVal">1.00</span>
+                                            </div>
+                                            <div class="fuzz-term">
+                                                <span class="fuzz-term-name">μ(Hızlı)</span>
+                                                <div class="fuzz-term-bar">
+                                                    <div class="fuzz-term-fill" id="fuzzTempoFast" style="width: 0%">
+                                                    </div>
+                                                </div>
+                                                <span class="fuzz-term-value" id="fuzzTempoFastVal">0.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fuzz-var-card">
+                                        <div class="fuzz-var-header">
+                                            <span class="fuzz-var-icon">⚡</span>
+                                            <span class="fuzz-var-name">Enerji Seviyesi</span>
+                                            <span class="fuzz-var-value" id="fuzzEnergyCrisp">50%</span>
+                                        </div>
+                                        <div class="fuzz-terms">
+                                            <div class="fuzz-term">
+                                                <span class="fuzz-term-name">μ(Düşük)</span>
+                                                <div class="fuzz-term-bar">
+                                                    <div class="fuzz-term-fill" id="fuzzEnergyLow" style="width: 0%">
+                                                    </div>
+                                                </div>
+                                                <span class="fuzz-term-value" id="fuzzEnergyLowVal">0.00</span>
+                                            </div>
+                                            <div class="fuzz-term">
+                                                <span class="fuzz-term-name">μ(Orta)</span>
+                                                <div class="fuzz-term-bar">
+                                                    <div class="fuzz-term-fill" id="fuzzEnergyMedium"
+                                                        style="width: 100%"></div>
+                                                </div>
+                                                <span class="fuzz-term-value" id="fuzzEnergyMediumVal">1.00</span>
+                                            </div>
+                                            <div class="fuzz-term">
+                                                <span class="fuzz-term-name">μ(Yüksek)</span>
+                                                <div class="fuzz-term-bar">
+                                                    <div class="fuzz-term-fill" id="fuzzEnergyHigh" style="width: 0%">
+                                                    </div>
+                                                </div>
+                                                <span class="fuzz-term-value" id="fuzzEnergyHighVal">0.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fuzz-var-card">
+                                        <div class="fuzz-var-header">
+                                            <span class="fuzz-var-icon">💡</span>
+                                            <span class="fuzz-var-name">Ortam Parlaklığı</span>
+                                            <span class="fuzz-var-value" id="fuzzBrightnessCrisp">50%</span>
+                                        </div>
+                                        <div class="fuzz-terms">
+                                            <div class="fuzz-term">
+                                                <span class="fuzz-term-name">μ(Karanlık)</span>
+                                                <div class="fuzz-term-bar">
+                                                    <div class="fuzz-term-fill" id="fuzzBrightnessDark"
+                                                        style="width: 0%"></div>
+                                                </div>
+                                                <span class="fuzz-term-value" id="fuzzBrightnessDarkVal">0.00</span>
+                                            </div>
+                                            <div class="fuzz-term">
+                                                <span class="fuzz-term-name">μ(Loş)</span>
+                                                <div class="fuzz-term-bar">
+                                                    <div class="fuzz-term-fill" id="fuzzBrightnessDim"
+                                                        style="width: 100%"></div>
+                                                </div>
+                                                <span class="fuzz-term-value" id="fuzzBrightnessDimVal">1.00</span>
+                                            </div>
+                                            <div class="fuzz-term">
+                                                <span class="fuzz-term-name">μ(Aydınlık)</span>
+                                                <div class="fuzz-term-bar">
+                                                    <div class="fuzz-term-fill" id="fuzzBrightnessBright"
+                                                        style="width: 0%"></div>
+                                                </div>
+                                                <span class="fuzz-term-value" id="fuzzBrightnessBrightVal">0.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Rule Evaluation Metrics -->
+                            <div class="stats-section">
+                                <h4 class="stats-section-title">⚙️ Kural Değerlendirme Metrikleri</h4>
+                                <div class="rule-metrics-grid">
+                                    <div class="metric-card">
+                                        <div class="metric-header">
+                                            <span class="metric-icon">🔥</span>
+                                            <span class="metric-title">Aktif Kurallar</span>
+                                        </div>
+                                        <div class="metric-value-container">
+                                            <span class="metric-value" id="statActiveRules">0</span>
+                                            <span class="metric-unit">/ 81</span>
+                                        </div>
+                                        <div class="metric-bar">
+                                            <div class="metric-bar-fill" id="activeRulesBar" style="width: 0%"></div>
+                                        </div>
+                                        <span class="metric-percent" id="activeRulesPercent">0%</span>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-header">
+                                            <span class="metric-icon">📈</span>
+                                            <span class="metric-title">Maks. Ateşleme Gücü</span>
+                                        </div>
+                                        <div class="metric-value-container">
+                                            <span class="metric-value" id="maxFiringStrength">0.00</span>
+                                        </div>
+                                        <div class="metric-bar">
+                                            <div class="metric-bar-fill metric-bar-accent" id="maxFiringBar"
+                                                style="width: 0%"></div>
+                                        </div>
+                                        <span class="metric-percent" id="maxFiringPercent">0%</span>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-header">
+                                            <span class="metric-icon">📊</span>
+                                            <span class="metric-title">Ort. Ateşleme Gücü</span>
+                                        </div>
+                                        <div class="metric-value-container">
+                                            <span class="metric-value" id="avgFiringStrength">0.00</span>
+                                        </div>
+                                        <div class="metric-bar">
+                                            <div class="metric-bar-fill metric-bar-secondary" id="avgFiringBar"
+                                                style="width: 0%"></div>
+                                        </div>
+                                        <span class="metric-percent" id="avgFiringPercent">0%</span>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-header">
+                                            <span class="metric-icon">🎯</span>
+                                            <span class="metric-title">Dominant Kural</span>
+                                        </div>
+                                        <div class="metric-value-container">
+                                            <span class="metric-value metric-value-sm" id="dominantRule">--</span>
+                                        </div>
+                                        <span class="metric-detail" id="dominantRuleDetail">Henüz çıkarım
+                                            yapılmadı</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Inference Flow Diagram -->
+                            <div class="stats-section">
+                                <h4 class="stats-section-title">🔄 Mamdani Çıkarım Akışı</h4>
+                                <div class="inference-flow-enhanced">
+                                    <div class="flow-step-enhanced">
+                                        <div class="flow-step-number">1</div>
+                                        <div class="flow-step-icon">📥</div>
+                                        <div class="flow-step-content">
+                                            <span class="flow-step-title">Keskin Giriş</span>
+                                            <span class="flow-step-desc">Crisp Input Values</span>
+                                        </div>
+                                    </div>
+                                    <div class="flow-connector">
+                                        <div class="flow-connector-line"></div>
+                                        <div class="flow-connector-arrow">▶</div>
+                                    </div>
+                                    <div class="flow-step-enhanced">
+                                        <div class="flow-step-number">2</div>
+                                        <div class="flow-step-icon">🔄</div>
+                                        <div class="flow-step-content">
+                                            <span class="flow-step-title">Bulanıklaştırma</span>
+                                            <span class="flow-step-desc">Fuzzification</span>
+                                        </div>
+                                    </div>
+                                    <div class="flow-connector">
+                                        <div class="flow-connector-line"></div>
+                                        <div class="flow-connector-arrow">▶</div>
+                                    </div>
+                                    <div class="flow-step-enhanced active">
+                                        <div class="flow-step-number">3</div>
+                                        <div class="flow-step-icon">⚙️</div>
+                                        <div class="flow-step-content">
+                                            <span class="flow-step-title">Kural Tabanı</span>
+                                            <span class="flow-step-desc">Rule Evaluation (MIN)</span>
+                                        </div>
+                                    </div>
+                                    <div class="flow-connector">
+                                        <div class="flow-connector-line"></div>
+                                        <div class="flow-connector-arrow">▶</div>
+                                    </div>
+                                    <div class="flow-step-enhanced">
+                                        <div class="flow-step-number">4</div>
+                                        <div class="flow-step-icon">📊</div>
+                                        <div class="flow-step-content">
+                                            <span class="flow-step-title">Birleştirme</span>
+                                            <span class="flow-step-desc">Aggregation (MAX)</span>
+                                        </div>
+                                    </div>
+                                    <div class="flow-connector">
+                                        <div class="flow-connector-line"></div>
+                                        <div class="flow-connector-arrow">▶</div>
+                                    </div>
+                                    <div class="flow-step-enhanced">
+                                        <div class="flow-step-number">5</div>
+                                        <div class="flow-step-icon">📤</div>
+                                        <div class="flow-step-content">
+                                            <span class="flow-step-title">Durulama</span>
+                                            <span class="flow-step-desc">Defuzzification (COA)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rule Activation Heatmap -->
+                        <div class="dashboard-card dashboard-card-wide">
+                            <div class="dashboard-card-header">
+                                <h3>🔥 Kural Aktivasyon Haritası</h3>
+                            </div>
+                            <div class="rule-heatmap" id="ruleHeatmap">
+                                <!-- Will be populated by JavaScript -->
+                                <div class="heatmap-placeholder">
+                                    Öneri almak için parametreleri ayarlayın
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Defuzzification Output -->
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <h3>📤 Durulama Çıktısı</h3>
+                            </div>
+                            <div class="defuzz-container">
+                                <div class="defuzz-chart-container">
+                                    <canvas id="defuzzChart" width="400" height="150"></canvas>
+                                </div>
+                                <div class="defuzz-results" id="defuzzResults">
+                                    <div class="defuzz-item">
+                                        <span class="defuzz-label">Tür Değeri:</span>
+                                        <span class="defuzz-value" id="defuzzGenre">--</span>
+                                    </div>
+                                    <div class="defuzz-item">
+                                        <span class="defuzz-label">Tempo Değeri:</span>
+                                        <span class="defuzz-value" id="defuzzTempo">--</span>
+                                    </div>
+                                    <div class="defuzz-item">
+                                        <span class="defuzz-label">Yöntem:</span>
+                                        <span class="defuzz-value">Center of Area (COA)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current Input Values -->
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <h3>📥 Giriş Değerleri</h3>
+                            </div>
+                            <div class="input-values-grid" id="inputValuesGrid">
+                                <div class="input-value-item">
+                                    <div class="input-value-icon">😊</div>
+                                    <div class="input-value-info">
+                                        <span class="input-value-name">Yüz İfadesi</span>
+                                        <span class="input-value-number" id="inputFacial">50</span>
+                                    </div>
+                                    <div class="input-value-bar">
+                                        <div class="input-value-fill" id="inputFacialBar" style="width: 50%"></div>
+                                    </div>
+                                </div>
+                                <div class="input-value-item">
+                                    <div class="input-value-icon">🎵</div>
+                                    <div class="input-value-info">
+                                        <span class="input-value-name">Tempo</span>
+                                        <span class="input-value-number" id="inputTempo">110 BPM</span>
+                                    </div>
+                                    <div class="input-value-bar">
+                                        <div class="input-value-fill" id="inputTempoBar" style="width: 43%"></div>
+                                    </div>
+                                </div>
+                                <div class="input-value-item">
+                                    <div class="input-value-icon">⚡</div>
+                                    <div class="input-value-info">
+                                        <span class="input-value-name">Enerji</span>
+                                        <span class="input-value-number" id="inputEnergy">50%</span>
+                                    </div>
+                                    <div class="input-value-bar">
+                                        <div class="input-value-fill" id="inputEnergyBar" style="width: 50%"></div>
+                                    </div>
+                                </div>
+                                <div class="input-value-item">
+                                    <div class="input-value-icon">💡</div>
+                                    <div class="input-value-info">
+                                        <span class="input-value-name">Parlaklık</span>
+                                        <span class="input-value-number" id="inputBrightness">50%</span>
+                                    </div>
+                                    <div class="input-value-bar">
+                                        <div class="input-value-fill" id="inputBrightnessBar" style="width: 50%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="container">
+                <p>
+                    🎓 Bilgisayar Mühendisliği - Bulanık Mantık Dersi Projesi
+                </p>
+                <p style="margin-top: 8px;">
+                    Mamdani Bulanık Çıkarım Sistemi • 4 Giriş Değişkeni • 2 Çıkış Değişkeni • 81 Kural
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- YouTube Modal -->
+    <div id="youtubeModal" class="youtube-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle" class="modal-title">Şarkı Oynatılıyor</h3>
+                <button id="modalClose" class="modal-close">✕</button>
+            </div>
+            <div class="modal-body">
+                <iframe id="youtubePlayer" src=""
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/fuzzy/membership.js"></script>
+    <script src="js/fuzzy/rules.js"></script>
+    <script src="js/fuzzy/defuzzifier.js"></script>
+    <script src="js/fuzzy/engine.js"></script>
+    <script src="js/inputs/facial.js"></script>
+    <script src="js/inputs/tempo.js"></script>
+    <script src="js/inputs/energy.js"></script>
+    <script src="js/inputs/brightness.js"></script>
+    <script src="js/outputs/youtube.js"></script>
+    <script src="js/outputs/recommender.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
