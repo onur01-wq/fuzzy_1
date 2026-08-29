@@ -36,7 +36,7 @@ Als Ergebnis liefert die Anwendung:
 
 - Fuzzy-Engine vollständig in Vanilla JavaScript implementiert
 - 81 IF-THEN-Regeln in einer transparenten Regelbasis
-- 14 Zugehörigkeitsfunktionen für Eingaben und Ausgaben
+- 21 Zugehörigkeitsfunktionen für Eingaben und Ausgaben
 - Visualisierung der Zugehörigkeitsgrade und aktiven Regeln
 - responsive Benutzeroberfläche in HTML und CSS
 - kein Backend und kein API-Schlüssel erforderlich
